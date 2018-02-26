@@ -14,8 +14,9 @@
 
 import webapp2
 
+#by default method="get"
 form = """
-<form action="/testform">
+<form method="post" action="/testform">
 	<input name="q">
 	<input type="submit">
 </form>
@@ -23,15 +24,15 @@ form = """
 
 class MainPage(webapp2.RequestHandler):
     def get(self):
-        #self.response.headers['Content-Type'] = 'text/plain'
+        #self.response.headers['Content-Type'] = 'text/plain' #by default text/html
         self.response.write(form)
 
 class  TestHandler(webapp2.RequestHandler):
-	def get(self):		
+	def post(self):		
 		self.response.headers['Content-Type'] = 'text/plain'
-		q = self.request.get('q')
-		self.response.write(q)
-		#self.response.write(self.request)
+		#q = self.request.get('q')
+		#self.response.write(q)
+		self.response.write(self.request)
 		#self.response.write(self.response)
 		
 
