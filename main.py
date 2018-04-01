@@ -100,8 +100,12 @@ class MainPage(webapp2.RequestHandler):
 		year = valid_year(user_year)
 
 		if month and day and year:
-			self.response.out.write("Valid")
+			self.redirect("/thanks")
 		else: 			
 			self.write_form("Invalid, please try again", user_month, user_day, user_year)
 
-app = webapp2.WSGIApplication([('/', MainPage)], debug=True)
+class ThanksHandler(webapp2.RequestHandler):
+	def get(self):
+		self.response.out.write("Valid")
+
+app = webapp2.WSGIApplication([('/', MainPage),('/thanks', ThanksHandler)], debug=True)
