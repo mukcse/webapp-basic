@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import webapp2
+import cgi
 
 #by default method="get"
 form = """
@@ -70,12 +71,20 @@ def valid_year(year):
 		if 1900<=year and year<=2020:
 			return year
 
+def escape_html(s):
+    '''array = (('&','&amp;'), ('<','&lt;'), ('>','&gt;'), ('"','&quote;'))
+    for (a,b) in array:
+        s = s.replace(a, b)
+    return s'''
+    return cgi.escape(s, quote=True) 			
+
+
 class MainPage(webapp2.RequestHandler):
 	def write_form(self, error="", month="", day="", year=""):
 		self.response.out.write(form%{"error":error,
-									  "month":month,
-									  "day":day,
-									  "year":year})
+									  "month":escape_html(month),
+									  "day":escape_html(day),
+									  "year":escape_html(year)})
 
 	def get(self):
 		#self.response.headers['Content-Type'] = 'text/plain' #by default text/html
