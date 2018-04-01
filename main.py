@@ -21,16 +21,17 @@ form = """
 	<br>
 	<label>
 		Month
-		<input type="text" name="month">
+		<input type="text" name="month" value=%(month)s>
 	</label>
 	<label>
 		Day
-		<input type="text" name="day">
+		<input type="text" name="day" value=%(day)s>
 	</label>
 	<label>
 		Year
-		<input type="text" name="year">
+		<input type="text" name="year" value=%(year)s>
 	</label>	
+	<div style="color:red">%(error)s</div>
 		 
 	<br><br>
 	<input type="submit">
@@ -38,50 +39,60 @@ form = """
 """
 
 months = ['January',
-          'February',
-          'March',
-          'April',
-          'May',
-          'June',
-          'July',
-          'August',
-          'September',
-          'October',
-          'November',
-          'December']
+		  'February',
+		  'March',
+		  'April',
+		  'May',
+		  'June',
+		  'July',
+		  'August',
+		  'September',
+		  'October',
+		  'November',
+		  'December']
 
 month_abv = dict((m[:3].lower(),m) for m in months)
 
 def valid_month(month):
-    if month:
-        key = month[:3].lower()
-        return month_abv.get(key)
+	if month:
+		key = month[:3].lower()
+		return month_abv.get(key)
 
 def valid_day(day):
-    if day.isdigit():
-        day = int(day)
-        if 1 <=day and day<=31:
-            return day
+	if day.isdigit():
+		day = int(day)
+		if 1 <=day and day<=31:
+			return day
 
 def valid_year(year):
-    if year.isdigit():
-        year = int(year)
-        if 1900<=year and year<=2020:
-            return year
+	if year.isdigit():
+		year = int(year)
+		if 1900<=year and year<=2020:
+			return year
 
 class MainPage(webapp2.RequestHandler):
-    def get(self):
-        #self.response.headers['Content-Type'] = 'text/plain' #by default text/html
-        self.response.write(form)
-    def post(self):
-    	user_month = valid_month(self.request.get("month"))
-    	user_day = valid_day(self.request.get("day"))
-    	user_year = valid_year(self.request.get("year"))
+	def write_form(self, error="", month="", day="", year=""):
+		self.response.out.write(form%{"error":error,
+									  "month":month,
+									  "day":day,
+									  "year":year})
 
-    	if user_month and user_day and user_year:
-    		self.response.out.write("Valid")
-    	else: 			
-			self.response.write(form)
-			self.response.out.write("Invalid, please try again")
+	def get(self):
+		#self.response.headers['Content-Type'] = 'text/plain' #by default text/html
+		self.write_form()
+
+	def post(self):	
+		user_month = self.request.get("month")
+		user_day = self.request.get("day")
+		user_year = self.request.get("year")
+
+		month = valid_month(user_month)
+		day = valid_day(user_day)
+		year = valid_year(user_year)
+
+		if month and day and year:
+			self.response.out.write("Valid")
+		else: 			
+			self.write_form("Invalid, please try again", user_month, user_day, user_year)
 
 app = webapp2.WSGIApplication([('/', MainPage)], debug=True)
